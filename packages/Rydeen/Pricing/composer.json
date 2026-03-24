@@ -1,0 +1,10 @@
+{
+    "name": "rydeen/pricing",
+    "description": "Rydeen promotional pricing engine",
+    "autoload": {
+        "psr-4": { "Rydeen\\Pricing\\": "src/" }
+    },
+    "autoload-dev": {
+        "psr-4": { "Rydeen\\Pricing\\Tests\\": "tests/" }
+    }
+}

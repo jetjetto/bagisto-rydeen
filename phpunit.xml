@@ -38,6 +38,11 @@
         <testsuite name="Rydeen Auth Feature Test">
             <directory suffix="Test.php">packages/Rydeen/Auth/tests/Feature</directory>
         </testsuite>
+
+        <!-- Rydeen Pricing package testsuites. -->
+        <testsuite name="Rydeen Pricing Unit Test">
+            <directory suffix="Test.php">packages/Rydeen/Pricing/tests/Unit</directory>
+        </testsuite>
     </testsuites>
 
     <source>

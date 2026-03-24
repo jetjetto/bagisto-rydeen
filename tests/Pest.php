@@ -25,6 +25,7 @@ uses(DataGridTestCase::class)->in('../packages/Webkul/DataGrid/tests');
 uses(InstallerTestCase::class)->in('../packages/Webkul/Installer/tests');
 uses(ShopTestCase::class)->in('../packages/Webkul/Shop/tests');
 uses(Tests\TestCase::class)->in('../packages/Rydeen/Auth/tests');
+uses(Tests\TestCase::class)->in('../packages/Rydeen/Pricing/tests');
 
 /*
 |--------------------------------------------------------------------------
