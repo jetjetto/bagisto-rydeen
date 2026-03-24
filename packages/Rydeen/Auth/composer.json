@@ -1,0 +1,10 @@
+{
+    "name": "rydeen/auth",
+    "description": "Rydeen passwordless authentication with 6-digit email codes",
+    "autoload": {
+        "psr-4": { "Rydeen\\Auth\\": "src/" }
+    },
+    "autoload-dev": {
+        "psr-4": { "Rydeen\\Auth\\Tests\\": "tests/" }
+    }
+}

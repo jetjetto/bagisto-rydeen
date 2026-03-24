@@ -90,4 +90,5 @@ return [
      * Rydeen custom packages.
      */
     \Rydeen\Core\Providers\CoreServiceProvider::class,
+    \Rydeen\Auth\Providers\AuthServiceProvider::class,
 ];

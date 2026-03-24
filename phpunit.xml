@@ -30,6 +30,14 @@
         <testsuite name="Shop Feature Test">
             <directory suffix="Test.php">packages/Webkul/Shop/tests/Feature</directory>
         </testsuite>
+
+        <!-- Rydeen Auth package testsuites. -->
+        <testsuite name="Rydeen Auth Unit Test">
+            <directory suffix="Test.php">packages/Rydeen/Auth/tests/Unit</directory>
+        </testsuite>
+        <testsuite name="Rydeen Auth Feature Test">
+            <directory suffix="Test.php">packages/Rydeen/Auth/tests/Feature</directory>
+        </testsuite>
     </testsuites>
 
     <source>
