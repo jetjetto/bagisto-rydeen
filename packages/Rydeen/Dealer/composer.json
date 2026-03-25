@@ -1,0 +1,10 @@
+{
+    "name": "rydeen/dealer",
+    "description": "Rydeen Dealer portal — approval, dashboard, catalog, orders, resources",
+    "autoload": {
+        "psr-4": { "Rydeen\\Dealer\\": "src/" }
+    },
+    "autoload-dev": {
+        "psr-4": { "Rydeen\\Dealer\\Tests\\": "tests/" }
+    }
+}

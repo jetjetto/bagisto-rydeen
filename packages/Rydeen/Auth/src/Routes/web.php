@@ -10,9 +10,4 @@ Route::middleware('web')->prefix('dealer')->group(function () {
     Route::post('verify', [LoginController::class, 'verify'])->name('dealer.verify');
     Route::post('resend-code', [LoginController::class, 'resendCode'])->name('dealer.resend-code');
     Route::post('logout', [LoginController::class, 'logout'])->name('dealer.logout');
-
-    // Placeholder dashboard route — will be replaced by the Dealer package
-    Route::get('dashboard', function () {
-        return redirect()->route('dealer.login');
-    })->name('dealer.dashboard');
 });

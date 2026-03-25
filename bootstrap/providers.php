@@ -92,4 +92,6 @@ return [
     \Rydeen\Core\Providers\CoreServiceProvider::class,
     \Rydeen\Auth\Providers\AuthServiceProvider::class,
     \Rydeen\Pricing\Providers\PricingServiceProvider::class,
+    \Rydeen\Dealer\Providers\DealerServiceProvider::class,
+    \Rydeen\Dealer\Providers\EventServiceProvider::class,
 ];
