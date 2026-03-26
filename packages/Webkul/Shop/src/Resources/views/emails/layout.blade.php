@@ -54,7 +54,7 @@
                     @lang('shop::app.emails.thanks', [
                         'link' => 'mailto:' . core()->getContactEmailDetails()['email'],
                         'email' => core()->getContactEmailDetails()['email'],
-                        'style' => 'color: #2969FF;'
+                        'style' => 'color: #B45309;'
                     ])
                 </p>
             </div>

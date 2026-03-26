@@ -11,7 +11,7 @@
         <p style="font-size: 16px;color: #5E5E5E;line-height: 24px;">
             @lang('admin::app.emails.orders.refunded.greeting', [
                 'invoice_id' => $refund->increment_id,
-                'order_id'   => '<a href="' . route('admin.sales.orders.view', $refund->order_id) . '" style="color: #2969FF;">#' . $refund->order->increment_id . '</a>',
+                'order_id'   => '<a href="' . route('admin.sales.orders.view', $refund->order_id) . '" style="color: #B45309;">#' . $refund->order->increment_id . '</a>',
                 'created_at' => core()->formatDate($refund->order->created_at, 'Y-m-d H:i:s')
             ])
         </p>
@@ -126,7 +126,7 @@
 
                                             <a
                                                 href="{{ Storage::url($attribute['option_label']) }}"
-                                                class="text-blue-600 hover:underline"
+                                                class="text-yellow-600 hover:underline"
                                                 download="{{ File::basename($attribute['option_label']) }}"
                                             >
                                                 {{ File::basename($attribute['option_label']) }}

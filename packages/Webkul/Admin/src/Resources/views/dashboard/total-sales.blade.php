@@ -73,7 +73,7 @@
                     return [{
                         data: this.report.statistics.over_time.map(({ total }) => total),
                         barThickness: 6,
-                        backgroundColor: '#598de6',
+                        backgroundColor: '#EAB308',
                     }];
                 }
             },

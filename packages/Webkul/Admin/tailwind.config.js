@@ -31,7 +31,7 @@ module.exports = {
         extend: {
             colors: {
                 darkGreen: '#40994A',
-                darkBlue: '#0044F2',
+                darkBlue: '#FACC15',
                 darkPink: '#F85156',
                 rydeen: '#FFD100',
                 /* Remap blue → Rydeen gold so all admin blue-* utilities become gold/yellow */

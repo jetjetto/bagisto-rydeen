@@ -16,7 +16,7 @@
     <div style="display: flex;margin-bottom: 95px">
         <a
             href="{{ route('admin.reset_password.create', $token) }}"
-            style="padding: 16px 45px;justify-content: center;align-items: center;gap: 10px;border-radius: 2px;background: #060C3B;color: #FFFFFF;text-decoration: none;text-transform: uppercase;font-weight: 700;"
+            style="padding: 16px 45px;justify-content: center;align-items: center;gap: 10px;border-radius: 2px;background: #FFD200;color: #000000;text-decoration: none;text-transform: uppercase;font-weight: 700;"
         >
             @lang('admin::app.emails.admin.forgot-password.reset-password')
         </a>

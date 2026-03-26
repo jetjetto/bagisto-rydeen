@@ -36,7 +36,7 @@ module.exports = {
                 navyBlue: "#1A1A1A",
                 lightOrange: "#F6F2EB",
                 darkGreen: '#40994A',
-                darkBlue: '#0044F2',
+                darkBlue: '#FACC15',
                 darkPink: '#F85156',
                 rydeen: '#FFD100',
             },

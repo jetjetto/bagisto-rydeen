@@ -25,7 +25,7 @@
     {{-- Category color map (using hex values for inline styles to avoid Tailwind purge issues) --}}
     @php
         $categoryHex = [
-            'Digital Mirrors'       => '#2563eb',
+            'Digital Mirrors'       => '#EAB308',
             'Blind Spot Detection'  => '#dc2626',
             'Cameras'               => '#16a34a',
             'Monitors'              => '#9333ea',

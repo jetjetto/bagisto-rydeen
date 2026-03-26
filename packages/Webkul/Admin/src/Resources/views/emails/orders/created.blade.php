@@ -10,7 +10,7 @@
 
         <p style="font-size: 16px;color: #5E5E5E;line-height: 24px;">
             {!! trans('admin::app.emails.orders.created.greeting', [
-                'order_id' => '<a href="' . route('admin.sales.orders.view', $order->id) . '" style="color: #2969FF;">#' . $order->increment_id . '</a>',
+                'order_id' => '<a href="' . route('admin.sales.orders.view', $order->id) . '" style="color: #B45309;">#' . $order->increment_id . '</a>',
                 'created_at' => core()->formatDate($order->created_at, 'Y-m-d H:i:s')
                 ])
             !!}
@@ -132,7 +132,7 @@
 
                                             <a
                                                 href="{{ Storage::url($attribute['option_label']) }}"
-                                                class="text-blue-600 hover:underline"
+                                                class="text-yellow-600 hover:underline"
                                                 download="{{ File::basename($attribute['option_label']) }}"
                                             >
                                                 {{ File::basename($attribute['option_label']) }}
