@@ -81,7 +81,13 @@ class OrderApprovalController extends Controller
             ->select('id', 'name', 'sku', 'qty_ordered', 'price', 'total', 'type')
             ->get();
 
-        return view('rydeen-dealer::admin.orders.view', compact('order', 'items'));
+        $contact = null;
+        $contactId = DB::table('orders')->where('id', $id)->value('dealer_contact_id');
+        if ($contactId) {
+            $contact = DB::table('rydeen_dealer_contacts')->where('id', $contactId)->first();
+        }
+
+        return view('rydeen-dealer::admin.orders.view', compact('order', 'items', 'contact'));
     }
 
     /**

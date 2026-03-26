@@ -91,6 +91,37 @@
         </div>
     </div>
 
+    {{-- Customer Contact --}}
+    @if (isset($contact) && $contact)
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+            <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">
+                Customer Contact
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div>
+                    <span class="text-gray-500 dark:text-gray-400">Name:</span>
+                    <span class="ml-2 font-medium">{{ $contact->first_name }} {{ $contact->last_name }}</span>
+                </div>
+                <div>
+                    <span class="text-gray-500 dark:text-gray-400">Email:</span>
+                    <span class="ml-2 font-medium">{{ $contact->email }}</span>
+                </div>
+                @if ($contact->phone)
+                    <div>
+                        <span class="text-gray-500 dark:text-gray-400">Phone:</span>
+                        <span class="ml-2 font-medium">{{ $contact->phone }}</span>
+                    </div>
+                @endif
+                @if ($contact->notes)
+                    <div class="md:col-span-2">
+                        <span class="text-gray-500 dark:text-gray-400">Notes:</span>
+                        <span class="ml-2">{{ $contact->notes }}</span>
+                    </div>
+                @endif
+            </div>
+        </div>
+    @endif
+
     {{-- Order Items --}}
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
         <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">

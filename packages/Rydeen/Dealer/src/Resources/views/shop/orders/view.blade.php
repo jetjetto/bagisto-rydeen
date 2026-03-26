@@ -48,6 +48,23 @@
         </div>
     </div>
 
+    {{-- Customer Contact --}}
+    @php
+        $contact = \Rydeen\Dealer\Models\DealerContact::find(
+            \Illuminate\Support\Facades\DB::table('orders')->where('id', $order->id)->value('dealer_contact_id')
+        );
+    @endphp
+    @if ($contact)
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-sm font-semibold text-gray-500 uppercase mb-2">Customer Contact</h2>
+            <p class="font-medium text-gray-900">{{ $contact->first_name }} {{ $contact->last_name }}</p>
+            <p class="text-sm text-gray-600">{{ $contact->email }}</p>
+            @if ($contact->phone)
+                <p class="text-sm text-gray-600">{{ $contact->phone }}</p>
+            @endif
+        </div>
+    @endif
+
     {{-- Order Items --}}
     <div class="bg-white rounded-lg shadow overflow-x-auto mb-6">
         <table class="w-full text-sm text-left">
