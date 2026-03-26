@@ -94,16 +94,12 @@
                                     </p>
                                 @endif
 
-                                {{-- Add to Cart (simple form) --}}
-                                <form action="{{ route('shop.api.checkout.cart.store') }}" method="POST" class="mt-3">
-                                    @csrf
-                                    <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                    <input type="hidden" name="quantity" value="1">
-                                    <button type="submit"
-                                            class="w-full bg-blue-600 text-white text-sm py-2 rounded hover:bg-blue-700">
-                                        @lang('rydeen-dealer::app.shop.catalog.add-to-cart')
-                                    </button>
-                                </form>
+                                {{-- Add to Cart --}}
+                                <button type="button"
+                                        onclick="addToCart({{ $product->id }}, 1, this)"
+                                        class="mt-3 w-full bg-blue-600 text-white text-sm py-2 rounded hover:bg-blue-700">
+                                    @lang('rydeen-dealer::app.shop.catalog.add-to-cart')
+                                </button>
                             </div>
                         </div>
                     @endforeach
@@ -116,3 +112,34 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+<script>
+    function addToCart(productId, quantity, btn) {
+        btn.disabled = true;
+        btn.textContent = '{{ trans('rydeen-dealer::app.shop.catalog.adding') }}';
+
+        fetch('{{ route('shop.api.checkout.cart.store') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({ product_id: productId, quantity: quantity }),
+        })
+        .then(r => r.json())
+        .then(data => {
+            btn.textContent = '{{ trans('rydeen-dealer::app.shop.catalog.added') }}';
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.textContent = '{{ trans('rydeen-dealer::app.shop.catalog.add-to-cart') }}';
+            }, 1500);
+        })
+        .catch(() => {
+            btn.disabled = false;
+            btn.textContent = '{{ trans('rydeen-dealer::app.shop.catalog.add-to-cart') }}';
+        });
+    }
+</script>
+@endpush

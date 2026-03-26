@@ -58,26 +58,55 @@
                 @endif
 
                 {{-- Add to Order --}}
-                <form action="{{ route('shop.api.checkout.cart.store') }}" method="POST" class="mt-6">
-                    @csrf
-                    <input type="hidden" name="product_id" value="{{ $product->id }}">
-                    <div class="flex items-center gap-4">
-                        <label for="quantity" class="text-sm font-medium text-gray-700">
-                            @lang('rydeen-dealer::app.shop.catalog.qty')
-                        </label>
-                        <input type="number"
-                               name="quantity"
-                               id="quantity"
-                               value="1"
-                               min="1"
-                               class="w-20 border border-gray-300 rounded px-3 py-2 text-sm text-center">
-                        <button type="submit"
-                                class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 text-sm font-medium">
-                            @lang('rydeen-dealer::app.shop.catalog.add-to-order')
-                        </button>
-                    </div>
-                </form>
+                <div class="mt-6 flex items-center gap-4">
+                    <label for="quantity" class="text-sm font-medium text-gray-700">
+                        @lang('rydeen-dealer::app.shop.catalog.qty')
+                    </label>
+                    <input type="number"
+                           id="quantity"
+                           value="1"
+                           min="1"
+                           class="w-20 border border-gray-300 rounded px-3 py-2 text-sm text-center">
+                    <button type="button"
+                            id="add-to-order-btn"
+                            onclick="addToCart({{ $product->id }}, document.getElementById('quantity').value, this)"
+                            class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 text-sm font-medium">
+                        @lang('rydeen-dealer::app.shop.catalog.add-to-order')
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 @endsection
+
+@push('scripts')
+<script>
+    function addToCart(productId, quantity, btn) {
+        btn.disabled = true;
+        var originalText = btn.textContent;
+        btn.textContent = '{{ trans('rydeen-dealer::app.shop.catalog.adding') }}';
+
+        fetch('{{ route('shop.api.checkout.cart.store') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({ product_id: productId, quantity: parseInt(quantity) }),
+        })
+        .then(r => r.json())
+        .then(data => {
+            btn.textContent = '{{ trans('rydeen-dealer::app.shop.catalog.added') }}';
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.textContent = originalText;
+            }, 1500);
+        })
+        .catch(() => {
+            btn.disabled = false;
+            btn.textContent = originalText;
+        });
+    }
+</script>
+@endpush

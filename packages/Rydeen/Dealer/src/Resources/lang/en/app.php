@@ -64,6 +64,8 @@ return [
             'add-to-order'       => 'Add to Order',
             'qty'                => 'Qty',
             'back-to-catalog'    => 'Back to Catalog',
+            'adding'             => 'Adding...',
+            'added'              => 'Added!',
         ],
 
         'orders' => [
