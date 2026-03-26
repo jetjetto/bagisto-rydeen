@@ -33,5 +33,4 @@ touch storage/installed
 php artisan optimize
 
 echo "=== Starting server on port ${PORT:-8080} ==="
-# NOTE: php artisan serve is for MVP. For production traffic, use FrankenPHP or Laravel Octane.
-php artisan serve --host=0.0.0.0 --port=${PORT:-8080}
+PHP_CLI_SERVER_WORKERS=4 php artisan serve --host=0.0.0.0 --port=${PORT:-8080}
