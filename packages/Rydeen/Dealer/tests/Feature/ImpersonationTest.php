@@ -34,6 +34,24 @@ it('admin cannot impersonate an unverified dealer', function () {
     DB::table('customers')->where('id', $customerId)->delete();
 });
 
+it('impersonating admin bypasses device verification', function () {
+    $admin = getTestAdmin();
+    $customerId = createVerifiedCompany();
+    $customer = Customer::find($customerId);
+
+    $response = $this->actingAs($customer, 'customer')
+        ->withSession([
+            'impersonating_admin_id'  => $admin->id,
+            'impersonating_dealer_id' => $customerId,
+        ])
+        ->get(route('dealer.dashboard'));
+
+    $response->assertStatus(200);
+
+    // Cleanup
+    DB::table('customers')->where('id', $customerId)->delete();
+});
+
 it('admin can stop impersonating and return to admin', function () {
     $admin = getTestAdmin();
     $customerId = createVerifiedCompany();

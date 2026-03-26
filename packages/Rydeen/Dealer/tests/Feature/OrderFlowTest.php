@@ -1,12 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Webkul\Customer\Models\Customer;
 
 it('authenticated dealer can view order review', function () {
-    $customer = createOrderTestCustomer();
+    ['customer' => $customer, 'uuid' => $uuid] = createOrderTestCustomer();
 
     $response = $this->actingAs($customer, 'customer')
+        ->withCookie('rydeen_device', $uuid)
         ->get(route('dealer.order-review'));
 
     $response->assertStatus(200);
@@ -14,9 +16,10 @@ it('authenticated dealer can view order review', function () {
 });
 
 it('authenticated dealer can view orders page', function () {
-    $customer = createOrderTestCustomer();
+    ['customer' => $customer, 'uuid' => $uuid] = createOrderTestCustomer();
 
     $response = $this->actingAs($customer, 'customer')
+        ->withCookie('rydeen_device', $uuid)
         ->get(route('dealer.orders'));
 
     $response->assertStatus(200);
@@ -24,9 +27,10 @@ it('authenticated dealer can view orders page', function () {
 });
 
 it('place order with empty cart redirects to catalog', function () {
-    $customer = createOrderTestCustomer();
+    ['customer' => $customer, 'uuid' => $uuid] = createOrderTestCustomer();
 
     $response = $this->actingAs($customer, 'customer')
+        ->withCookie('rydeen_device', $uuid)
         ->post(route('dealer.order-review.place'));
 
     $response->assertRedirect(route('dealer.catalog'));
@@ -39,9 +43,10 @@ it('unauthenticated user cannot view orders', function () {
 });
 
 it('authenticated dealer can view dashboard', function () {
-    $customer = createOrderTestCustomer();
+    ['customer' => $customer, 'uuid' => $uuid] = createOrderTestCustomer();
 
     $response = $this->actingAs($customer, 'customer')
+        ->withCookie('rydeen_device', $uuid)
         ->get(route('dealer.dashboard'));
 
     $response->assertStatus(200);
@@ -49,9 +54,10 @@ it('authenticated dealer can view dashboard', function () {
 });
 
 it('authenticated dealer can view resources', function () {
-    $customer = createOrderTestCustomer();
+    ['customer' => $customer, 'uuid' => $uuid] = createOrderTestCustomer();
 
     $response = $this->actingAs($customer, 'customer')
+        ->withCookie('rydeen_device', $uuid)
         ->get(route('dealer.resources'));
 
     $response->assertStatus(200);
@@ -63,9 +69,10 @@ afterEach(function () {
 });
 
 /**
- * Create a verified customer for order testing.
+ * Create a verified customer with a trusted device record for order testing.
+ * Returns ['customer' => Customer, 'uuid' => string].
  */
-function createOrderTestCustomer(): Customer
+function createOrderTestCustomer(): array
 {
     $email = 'order-test-' . uniqid() . '@example.com';
     $channelId = DB::table('channels')->value('id') ?? 1;
@@ -84,5 +91,15 @@ function createOrderTestCustomer(): Customer
         'updated_at'        => now(),
     ]);
 
-    return Customer::find($id);
+    $uuid = (string) Str::uuid();
+
+    DB::table('rydeen_trusted_devices')->insert([
+        'customer_id' => $id,
+        'uuid'        => $uuid,
+        'expires_at'  => now()->addDays(30),
+        'created_at'  => now(),
+        'updated_at'  => now(),
+    ]);
+
+    return ['customer' => Customer::find($id), 'uuid' => $uuid];
 }

@@ -25,6 +25,11 @@ class DeviceVerification
             return redirect()->route('dealer.login');
         }
 
+        // Skip device verification during impersonation
+        if (session('impersonating_admin_id')) {
+            return $next($request);
+        }
+
         $uuid = $request->cookie('rydeen_device');
 
         if ($this->authService->isDeviceTrusted($customer, $uuid)) {

@@ -1,12 +1,14 @@
 <?php
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Webkul\Customer\Models\Customer;
 
 it('authenticated dealer can view catalog', function () {
-    $customer = createDealerCustomer();
+    ['customer' => $customer, 'uuid' => $uuid] = createDealerCustomer();
 
     $response = $this->actingAs($customer, 'customer')
+        ->withCookie('rydeen_device', $uuid)
         ->get(route('dealer.catalog'));
 
     $response->assertStatus(200);
@@ -21,19 +23,21 @@ it('unauthenticated user is redirected from catalog', function () {
 });
 
 it('catalog search returns 200', function () {
-    $customer = createDealerCustomer();
+    ['customer' => $customer, 'uuid' => $uuid] = createDealerCustomer();
 
     $response = $this->actingAs($customer, 'customer')
+        ->withCookie('rydeen_device', $uuid)
         ->get(route('dealer.catalog', ['search' => 'test-sku']));
 
     $response->assertStatus(200);
 });
 
 it('catalog category filter returns 200', function () {
-    $customer = createDealerCustomer();
+    ['customer' => $customer, 'uuid' => $uuid] = createDealerCustomer();
     $categoryId = DB::table('categories')->value('id') ?? 1;
 
     $response = $this->actingAs($customer, 'customer')
+        ->withCookie('rydeen_device', $uuid)
         ->get(route('dealer.catalog', ['category' => $categoryId]));
 
     $response->assertStatus(200);
@@ -44,9 +48,10 @@ afterEach(function () {
 });
 
 /**
- * Create a verified customer for testing.
+ * Create a verified customer with a trusted device record for testing.
+ * Returns ['customer' => Customer, 'uuid' => string].
  */
-function createDealerCustomer(): Customer
+function createDealerCustomer(): array
 {
     $email = 'catalog-test-' . uniqid() . '@example.com';
     $channelId = DB::table('channels')->value('id') ?? 1;
@@ -65,5 +70,15 @@ function createDealerCustomer(): Customer
         'updated_at'        => now(),
     ]);
 
-    return Customer::find($id);
+    $uuid = (string) Str::uuid();
+
+    DB::table('rydeen_trusted_devices')->insert([
+        'customer_id' => $id,
+        'uuid'        => $uuid,
+        'expires_at'  => now()->addDays(30),
+        'created_at'  => now(),
+        'updated_at'  => now(),
+    ]);
+
+    return ['customer' => Customer::find($id), 'uuid' => $uuid];
 }

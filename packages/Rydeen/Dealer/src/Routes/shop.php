@@ -8,7 +8,7 @@ use Rydeen\Dealer\Http\Controllers\Shop\DashboardController;
 use Rydeen\Dealer\Http\Controllers\Shop\OrderController;
 use Rydeen\Dealer\Http\Controllers\Shop\ResourcesController;
 
-Route::middleware(['web', 'customer'])->prefix('dealer')->group(function () {
+Route::middleware(['web', 'customer', 'device.verify'])->prefix('dealer')->group(function () {
     // Dashboard
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dealer.dashboard');
 
