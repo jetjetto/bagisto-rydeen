@@ -19,6 +19,11 @@ class DealerServiceProvider extends ServiceProvider
             \Webkul\Admin\Http\Controllers\Customers\CustomerController::class,
             \Rydeen\Dealer\Http\Controllers\Admin\CustomerController::class
         );
+
+        $this->app->bind(
+            \Webkul\B2BSuite\DataGrids\Admin\CompanyDataGrid::class,
+            \Rydeen\Dealer\DataGrids\RydeenCompanyDataGrid::class
+        );
     }
 
     /**
