@@ -2,6 +2,13 @@
 
 return [
     'admin' => [
+        'menu' => [
+            'dealers'  => 'Dealers',
+            'contacts' => 'Dealer Contacts',
+            'orders'   => 'Dealer Orders',
+            'settings' => 'Rydeen Settings',
+        ],
+
         'dealers-title'    => 'Dealer Management',
         'dealer-detail'    => 'Dealer Detail',
         'dealer-info'      => 'Dealer Information',
