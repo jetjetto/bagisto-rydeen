@@ -9,11 +9,11 @@ it('builds with correct subject and view', function () {
         'email'      => 'john@example.com',
     ];
 
-    $mailable = new CompanyInvitationMail($dealer, 'https://example.com/reset-password/abc123?email=john@example.com');
+    $mailable = new CompanyInvitationMail($dealer, 'https://example.com/dealer/login');
 
     $mailable->assertHasSubject('Welcome to the Rydeen Dealer Portal');
     $mailable->assertSeeInHtml('John');
-    $mailable->assertSeeInHtml('https://example.com/reset-password/abc123?email=john@example.com');
+    $mailable->assertSeeInHtml('https://example.com/dealer/login');
     $mailable->assertSeeInHtml('RYDEEN');
-    $mailable->assertSeeInHtml('Set Your Password');
+    $mailable->assertSeeInHtml('Log In to Your Account');
 });

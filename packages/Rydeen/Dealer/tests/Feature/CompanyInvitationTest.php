@@ -31,12 +31,11 @@ it('sends invitation email when a company-type customer is created', function ()
     $listener = new CompanyInvitationListener();
     $listener->afterCreated($customer);
 
-    Mail::assertQueued(CompanyInvitationMail::class, function ($mail) use ($customer) {
+    Mail::assertSent(CompanyInvitationMail::class, function ($mail) use ($customer) {
         return $mail->hasTo($customer->email);
     });
 
     // Cleanup
-    DB::table('customer_password_resets')->where('email', $customer->email)->delete();
     DB::table('customers')->where('id', $customerId)->delete();
 });
 
@@ -65,7 +64,7 @@ it('does not send invitation for non-company customers', function () {
     $listener = new CompanyInvitationListener();
     $listener->afterCreated($customer);
 
-    Mail::assertNothingQueued();
+    Mail::assertNothingSent();
 
     // Cleanup
     DB::table('customers')->where('id', $customerId)->delete();
@@ -98,14 +97,12 @@ it('admin can resend invitation for a company', function () {
     $response->assertRedirect();
     $response->assertSessionHas('success');
 
-    Mail::assertQueued(CompanyInvitationMail::class, function ($mail) use ($customerId) {
+    Mail::assertSent(CompanyInvitationMail::class, function ($mail) use ($customerId) {
         $customer = Customer::find($customerId);
         return $mail->hasTo($customer->email);
     });
 
     // Cleanup
-    $email = DB::table('customers')->where('id', $customerId)->value('email');
-    DB::table('customer_password_resets')->where('email', $email)->delete();
     DB::table('customers')->where('id', $customerId)->delete();
 });
 
@@ -121,7 +118,7 @@ it('resend invitation rejects non-company customers', function () {
     $response->assertRedirect();
     $response->assertSessionHas('error');
 
-    Mail::assertNothingQueued();
+    Mail::assertNothingSent();
 
     // Cleanup
     DB::table('customers')->where('id', $customerId)->delete();

@@ -46,8 +46,10 @@ class DealerApprovalController extends Controller
         $dealer->save();
 
         // Send approval notification
+        $loginUrl = route('dealer.login');
+
         try {
-            Mail::to($dealer->email)->send(new DealerApprovedMail($dealer));
+            Mail::to($dealer->email)->send(new DealerApprovedMail($dealer, $loginUrl));
         } catch (\Exception $e) {
             // Log but don't block approval
             report($e);
