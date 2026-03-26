@@ -40,6 +40,10 @@ return [
         'invitation-send-failed' => 'Failed to send invitation email. Please try again.',
         'invitation-not-company' => 'Invitations can only be sent to company accounts.',
         'resend-invitation'      => 'Resend Invitation',
+        'impersonate'              => 'Login as Dealer',
+        'impersonate-not-allowed'  => 'Cannot impersonate this dealer. They must be verified and not suspended.',
+        'impersonation-banner'     => 'You are viewing as',
+        'impersonation-return'     => 'Return to Admin',
 
         'orders' => [
             'title'          => 'Dealer Orders',

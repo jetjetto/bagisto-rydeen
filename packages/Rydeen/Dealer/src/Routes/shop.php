@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Rydeen\Dealer\Http\Controllers\Admin\ExportController;
+use Rydeen\Dealer\Http\Controllers\Admin\ImpersonationController;
 use Rydeen\Dealer\Http\Controllers\Shop\CatalogController;
 use Rydeen\Dealer\Http\Controllers\Shop\DashboardController;
 use Rydeen\Dealer\Http\Controllers\Shop\OrderController;
@@ -39,4 +40,7 @@ Route::middleware(['web', 'customer'])->prefix('dealer')->group(function () {
 
     // Resources / FAQ
     Route::get('resources', [ResourcesController::class, 'index'])->name('dealer.resources');
+
+    // Impersonation stop
+    Route::post('impersonate/stop', [ImpersonationController::class, 'stop'])->name('dealer.impersonate.stop');
 });

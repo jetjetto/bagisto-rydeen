@@ -1,0 +1,123 @@
+<?php
+
+use Illuminate\Support\Facades\DB;
+use Webkul\Customer\Models\Customer;
+use Webkul\User\Models\Admin;
+
+it('admin can start impersonating a verified dealer', function () {
+    $admin = getTestAdmin();
+    $customerId = createVerifiedCompany();
+
+    $response = $this->actingAs($admin, 'admin')
+        ->post(route('admin.rydeen.dealers.impersonate', $customerId));
+
+    $response->assertRedirect(route('dealer.dashboard'));
+    $response->assertSessionHas('impersonating_admin_id', $admin->id);
+    $response->assertSessionHas('impersonating_dealer_id', $customerId);
+
+    // Cleanup
+    DB::table('customers')->where('id', $customerId)->delete();
+});
+
+it('admin cannot impersonate an unverified dealer', function () {
+    $admin = getTestAdmin();
+    $customerId = createPendingDealer();
+
+    $response = $this->actingAs($admin, 'admin')
+        ->post(route('admin.rydeen.dealers.impersonate', $customerId));
+
+    $response->assertRedirect();
+    $response->assertSessionHas('error');
+    $response->assertSessionMissing('impersonating_admin_id');
+
+    // Cleanup
+    DB::table('customers')->where('id', $customerId)->delete();
+});
+
+it('admin can stop impersonating and return to admin', function () {
+    $admin = getTestAdmin();
+    $customerId = createVerifiedCompany();
+    $customer = Customer::find($customerId);
+
+    $this->actingAs($admin, 'admin');
+
+    // Start impersonation via the route
+    $this->post(route('admin.rydeen.dealers.impersonate', $customerId));
+
+    // Now stop impersonation
+    $response = $this->post(route('dealer.impersonate.stop'));
+
+    $response->assertRedirect(route('admin.rydeen.dealers.view', $customerId));
+    $response->assertSessionMissing('impersonating_admin_id');
+    $response->assertSessionMissing('impersonating_dealer_id');
+
+    // Cleanup
+    DB::table('customers')->where('id', $customerId)->delete();
+});
+
+if (! function_exists('createVerifiedCompany')) {
+    function createVerifiedCompany(): int
+    {
+        $channelId = DB::table('channels')->value('id') ?? 1;
+        $groupId = DB::table('customer_groups')->value('id') ?? 1;
+
+        return DB::table('customers')->insertGetId([
+            'first_name'        => 'Verified',
+            'last_name'         => 'Company',
+            'email'             => 'verified-' . uniqid() . '@example.com',
+            'password'          => bcrypt('password'),
+            'type'              => 'company',
+            'customer_group_id' => $groupId,
+            'channel_id'        => $channelId,
+            'is_verified'       => 1,
+            'status'            => 1,
+            'created_at'        => now(),
+            'updated_at'        => now(),
+        ]);
+    }
+}
+
+if (! function_exists('getTestAdmin')) {
+    function getTestAdmin(): Admin
+    {
+        $admin = Admin::where('email', 'rydeen-test-admin@example.com')->first();
+
+        if (! $admin) {
+            $roleId = DB::table('roles')->value('id') ?? 1;
+            $id = DB::table('admins')->insertGetId([
+                'name'       => 'Test Admin',
+                'email'      => 'rydeen-test-admin@example.com',
+                'password'   => bcrypt('password'),
+                'status'     => 1,
+                'role_id'    => $roleId,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+            $admin = Admin::find($id);
+        }
+
+        return $admin;
+    }
+}
+
+if (! function_exists('createPendingDealer')) {
+    function createPendingDealer(): int
+    {
+        $channelId = DB::table('channels')->value('id') ?? 1;
+        $groupId = DB::table('customer_groups')->value('id') ?? 1;
+
+        return DB::table('customers')->insertGetId([
+            'first_name'        => 'Pending',
+            'last_name'         => 'Dealer',
+            'email'             => 'pending-' . uniqid() . '@example.com',
+            'password'          => bcrypt('password'),
+            'type'              => 'user',
+            'customer_group_id' => $groupId,
+            'channel_id'        => $channelId,
+            'is_verified'       => 0,
+            'status'            => 0,
+            'created_at'        => now(),
+            'updated_at'        => now(),
+        ]);
+    }
+}

@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Rydeen\Dealer\Http\Controllers\Admin\DealerApprovalController;
+use Rydeen\Dealer\Http\Controllers\Admin\ImpersonationController;
 use Rydeen\Dealer\Http\Controllers\Admin\OrderApprovalController;
 
 Route::middleware(['web', 'admin'])->prefix('admin/rydeen/dealers')->group(function () {
@@ -12,6 +13,7 @@ Route::middleware(['web', 'admin'])->prefix('admin/rydeen/dealers')->group(funct
     Route::post('{id}/assign-rep', [DealerApprovalController::class, 'assignRep'])->name('admin.rydeen.dealers.assign-rep');
     Route::post('{id}/update-forecast', [DealerApprovalController::class, 'updateForecastLevel'])->name('admin.rydeen.dealers.update-forecast');
     Route::post('{id}/resend-invitation', [DealerApprovalController::class, 'resendInvitation'])->name('admin.rydeen.dealers.resend-invitation');
+    Route::post('{id}/impersonate', [ImpersonationController::class, 'start'])->name('admin.rydeen.dealers.impersonate');
 });
 
 Route::middleware(['web', 'admin'])->prefix('admin/rydeen/orders')->group(function () {
