@@ -38,4 +38,13 @@ php artisan rydeen:test-email zacharyamith@outlook.com || echo "WARNING: test em
 
 echo "=== Starting Octane (FrankenPHP) on port ${PORT:-8080} ==="
 php artisan octane:install --server=frankenphp 2>&1 || { echo "ERROR: FrankenPHP install failed"; exit 1; }
+
+# Disable Nix opcache extension — it's incompatible with FrankenPHP's embedded PHP
+OPCACHE_INI=$(php -r "echo php_ini_scanned_dir();" 2>/dev/null)
+if [ -n "$OPCACHE_INI" ]; then
+    find "$OPCACHE_INI" -name '*opcache*' -exec rm -f {} \; 2>/dev/null || true
+fi
+# Also disable via environment
+export PHP_INI_SCAN_DIR=
+
 exec php artisan octane:start --server=frankenphp --host=0.0.0.0 --port=${PORT:-8080} --workers=4 --max-requests=500
