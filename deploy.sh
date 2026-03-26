@@ -38,4 +38,8 @@ php artisan rydeen:test-email zacharyamith@outlook.com || echo "WARNING: test em
 
 echo "=== Starting Octane (FrankenPHP) on port ${PORT:-8080} ==="
 php artisan octane:install --server=frankenphp 2>&1 || { echo "ERROR: FrankenPHP install failed"; exit 1; }
+# Ensure errors are logged to stderr
+export LOG_CHANNEL=stderr
+export LOG_LEVEL=debug
+
 exec php artisan octane:start --server=frankenphp --host=0.0.0.0 --port=${PORT:-8080} --workers=4 --max-requests=500
