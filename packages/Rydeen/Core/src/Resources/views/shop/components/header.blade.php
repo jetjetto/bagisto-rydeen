@@ -3,7 +3,7 @@
         <div class="flex items-center justify-between h-16">
 
             {{-- Logo --}}
-            <a href="/" class="text-2xl font-bold text-gray-900 tracking-tight">RYDEEN</a>
+            <a href="{{ auth('customer')->check() ? '/dealer/dashboard' : '/dealer/login' }}" class="text-2xl font-bold text-gray-900 tracking-tight">RYDEEN</a>
 
             {{-- Desktop Navigation --}}
             <nav class="hidden md:flex items-center space-x-6">
