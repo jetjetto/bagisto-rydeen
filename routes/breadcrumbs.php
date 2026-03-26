@@ -5,7 +5,7 @@ use Diglactic\Breadcrumbs\Generator as BreadcrumbTrail;
 
 // Home
 Breadcrumbs::for('home', function (BreadcrumbTrail $trail) {
-    $trail->push(trans('shop::app.customers.account.home'), route('shop.home.index'));
+    $trail->push(trans('shop::app.customers.account.home'), route('dealer.dashboard'));
 });
 
 // Home > My Account

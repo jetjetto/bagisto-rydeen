@@ -9,18 +9,26 @@ use Symfony\Component\HttpFoundation\Response;
 class RedirectStandardAuth
 {
     /**
-     * Redirect standard Bagisto auth routes to the dealer login.
+     * Redirect standard Bagisto auth/storefront routes to dealer portal.
      *
-     * Catches requests to /customer/login, /customer/register,
-     * and /companies/register and redirects them to /dealer/login.
+     * Catches requests to the storefront home, customer auth pages,
+     * and company registration, redirecting them to the dealer portal.
      */
     public function handle(Request $request, Closure $next): Response
     {
         $path = $request->path();
 
+        // Root path → dealer dashboard (or login if unauthenticated)
+        if ($path === '/' || $path === '') {
+            return auth('customer')->check()
+                ? redirect()->route('dealer.dashboard')
+                : redirect()->route('dealer.login');
+        }
+
         $redirectPaths = [
             'customer/login',
             'customer/register',
+            'customer/forgot-password',
             'companies/register',
         ];
 
