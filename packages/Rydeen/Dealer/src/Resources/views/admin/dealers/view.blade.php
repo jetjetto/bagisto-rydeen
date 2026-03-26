@@ -102,6 +102,15 @@
                         </button>
                     </form>
                 @endif
+
+                @if ($dealer->type === 'company' && $dealer->is_verified && ! $dealer->is_suspended)
+                    <form action="{{ route('admin.rydeen.dealers.resend-invitation', $dealer->id) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">
+                            @lang('rydeen-dealer::app.admin.resend-invitation')
+                        </button>
+                    </form>
+                @endif
             </div>
         </div>
 

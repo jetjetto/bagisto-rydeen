@@ -127,6 +127,35 @@ it('resend invitation rejects non-company customers', function () {
     DB::table('customers')->where('id', $customerId)->delete();
 });
 
+it('dealer view page shows resend button for company accounts', function () {
+    $admin = getTestAdmin();
+    $channelId = DB::table('channels')->value('id') ?? 1;
+    $groupId = DB::table('customer_groups')->value('id') ?? 1;
+
+    $customerId = DB::table('customers')->insertGetId([
+        'first_name'        => 'View',
+        'last_name'         => 'Test',
+        'email'             => 'view-' . uniqid() . '@example.com',
+        'password'          => bcrypt('password'),
+        'type'              => 'company',
+        'customer_group_id' => $groupId,
+        'channel_id'        => $channelId,
+        'is_verified'       => 1,
+        'status'            => 1,
+        'created_at'        => now(),
+        'updated_at'        => now(),
+    ]);
+
+    $response = $this->actingAs($admin, 'admin')
+        ->get(route('admin.rydeen.dealers.view', $customerId));
+
+    $response->assertStatus(200);
+    $response->assertSee('Resend Invitation');
+
+    // Cleanup
+    DB::table('customers')->where('id', $customerId)->delete();
+});
+
 if (! function_exists('getTestAdmin')) {
     function getTestAdmin(): \Webkul\User\Models\Admin
     {
