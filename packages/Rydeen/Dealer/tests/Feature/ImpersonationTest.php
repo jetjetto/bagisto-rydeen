@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\DB;
+use Rydeen\Dealer\Listeners\OrderListener;
 use Webkul\Customer\Models\Customer;
 use Webkul\User\Models\Admin;
 
@@ -125,6 +126,48 @@ it('admin dealer view shows impersonate button for verified dealers', function (
 
     // Cleanup
     DB::table('customers')->where('id', $customerId)->delete();
+});
+
+it('adds audit note to order when placed during impersonation', function () {
+    $admin = getTestAdmin();
+    $customerId = createVerifiedCompany();
+
+    $order = (object) [
+        'id'    => 999,
+        'notes' => null,
+    ];
+
+    session([
+        'impersonating_admin_id'  => $admin->id,
+        'impersonating_dealer_id' => $customerId,
+    ]);
+
+    \Illuminate\Support\Facades\Mail::fake();
+
+    $listener = new OrderListener();
+    $listener->afterOrderCreated($order);
+
+    expect($order->notes)->toContain('Order placed by');
+    expect($order->notes)->toContain($admin->name);
+
+    session()->forget(['impersonating_admin_id', 'impersonating_dealer_id']);
+    DB::table('customers')->where('id', $customerId)->delete();
+});
+
+it('does not add audit note for normal orders', function () {
+    $order = (object) [
+        'id'    => 999,
+        'notes' => null,
+    ];
+
+    session()->forget('impersonating_admin_id');
+
+    \Illuminate\Support\Facades\Mail::fake();
+
+    $listener = new OrderListener();
+    $listener->afterOrderCreated($order);
+
+    expect($order->notes)->toBeNull();
 });
 
 it('admin dealer view hides impersonate button for unverified dealers', function () {
