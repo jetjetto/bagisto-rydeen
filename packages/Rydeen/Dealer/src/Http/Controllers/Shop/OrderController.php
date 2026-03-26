@@ -184,12 +184,17 @@ class OrderController extends Controller
             $data['notes'] = $request->notes;
         }
 
+        // Attach dealer contact ID so it's available when the order event fires
+        $data['dealer_contact_id'] = $contact->id;
+
         $order = $this->orderRepository->create($data);
 
-        // Attach the dealer contact to the order
-        \Illuminate\Support\Facades\DB::table('orders')
-            ->where('id', $order->id)
-            ->update(['dealer_contact_id' => $contact->id]);
+        // Ensure dealer_contact_id is set (safety net if repository strips unknown columns)
+        if (! $order->dealer_contact_id) {
+            \Illuminate\Support\Facades\DB::table('orders')
+                ->where('id', $order->id)
+                ->update(['dealer_contact_id' => $contact->id]);
+        }
 
         // Deactivate the cart
         Cart::deActivateCart();

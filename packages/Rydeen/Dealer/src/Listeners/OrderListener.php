@@ -36,9 +36,9 @@ class OrderListener
 
     protected function getContact($order): ?DealerContact
     {
-        $contactId = DB::table('orders')
-            ->where('id', $order->id)
-            ->value('dealer_contact_id');
+        // Try reading from the order model first (set in $data before create)
+        $contactId = $order->dealer_contact_id
+            ?? DB::table('orders')->where('id', $order->id)->value('dealer_contact_id');
 
         return $contactId ? DealerContact::find($contactId) : null;
     }
