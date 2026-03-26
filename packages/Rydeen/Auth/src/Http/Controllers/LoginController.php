@@ -23,7 +23,39 @@ class LoginController extends Controller
     }
 
     /**
-     * Send a verification code to the given email.
+     * Authenticate with email + password (simplified for MVP).
+     */
+    public function login(Request $request)
+    {
+        $request->validate([
+            'email'    => 'required|email',
+            'password' => 'required|string',
+        ]);
+
+        if (! auth('customer')->attempt([
+            'email'    => $request->email,
+            'password' => $request->password,
+        ])) {
+            return back()->withErrors(['email' => 'Invalid email or password.'])->withInput();
+        }
+
+        $customer = auth('customer')->user();
+
+        if (! $customer->is_verified) {
+            auth('customer')->logout();
+            return back()->withErrors(['email' => 'Your account is not yet approved.'])->withInput();
+        }
+
+        if ($customer->is_suspended) {
+            auth('customer')->logout();
+            return back()->withErrors(['email' => 'Your account has been suspended.'])->withInput();
+        }
+
+        return redirect()->route('dealer.dashboard');
+    }
+
+    /**
+     * Send a verification code to the given email (for future passwordless flow).
      */
     public function sendCode(Request $request)
     {
