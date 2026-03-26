@@ -1,4 +1,4 @@
-# Bagisto Contribution Guide
+# Contribution Guide
 
 **BUGS:**
 
