@@ -9,23 +9,27 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class OrderSubmittedMail extends Mailable implements ShouldQueue
+class OrderCustomerNotificationMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    public function __construct(public $order, public $contact = null) {}
+    public function __construct(
+        public $order,
+        public $contact,
+        public string $dealerName,
+    ) {}
 
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'New Dealer Order #' . ($this->order->increment_id ?? $this->order->id),
+            subject: 'Order Submitted on Your Behalf — #' . ($this->order->increment_id ?? $this->order->id),
         );
     }
 
     public function content(): Content
     {
         return new Content(
-            view: 'rydeen-dealer::shop.emails.order-submitted',
+            view: 'rydeen-dealer::shop.emails.order-customer-notification',
         );
     }
 }

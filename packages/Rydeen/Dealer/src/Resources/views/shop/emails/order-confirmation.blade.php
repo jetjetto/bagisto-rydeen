@@ -17,6 +17,17 @@
             <strong>Date:</strong> {{ $order->created_at->format('M d, Y h:i A') }}
         </p>
 
+        @if ($contact)
+            <div style="background: #f9f9f9; border-left: 3px solid #000000; padding: 12px 16px; margin: 16px 0; border-radius: 4px;">
+                <p style="margin: 0; font-size: 14px; color: #333;">
+                    <strong>Customer:</strong><br>
+                    {{ $contact->first_name }} {{ $contact->last_name }}<br>
+                    {{ $contact->email }}
+                    @if ($contact->phone)<br>{{ $contact->phone }}@endif
+                </p>
+            </div>
+        @endif
+
         <table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
             <thead>
                 <tr>
