@@ -21,7 +21,7 @@
         </p>
 
         <p style="color: #999; font-size: 12px; text-align: center; margin-top: 32px;">
-            &mdash; Rydeen Mobile
+            &mdash; Rydeen
         </p>
     </div>
 </body>

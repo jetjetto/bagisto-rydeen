@@ -26,6 +26,10 @@ fi
 
 php artisan storage:link --force || true
 touch storage/installed
+
+# Ensure Rydeen branding is applied
+php artisan db:seed --class="Rydeen\Core\Database\Seeders\RydeenSeeder" --force || echo "WARNING: Rydeen seed failed"
+
 php artisan optimize || echo "WARNING: optimize failed"
 
 # One-time test email — remove after confirming Resend works
