@@ -13,8 +13,10 @@ class DashboardController extends Controller
     public function index()
     {
         $customer = auth('customer')->user();
-        $stats = app(DashboardStatsService::class)->getStats($customer);
+        $statsService = app(DashboardStatsService::class);
+        $stats = $statsService->getStats($customer);
+        $recentOrders = $statsService->getRecentOrders($customer->id);
 
-        return view('rydeen-dealer::shop.dashboard.index', compact('stats', 'customer'));
+        return view('rydeen-dealer::shop.dashboard.index', compact('customer', 'stats', 'recentOrders'));
     }
 }

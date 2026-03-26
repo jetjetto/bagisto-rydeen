@@ -53,6 +53,68 @@
         </div>
     </div>
 
+    {{-- Recent Orders --}}
+    <div class="mt-8 bg-white rounded-lg shadow">
+        <div class="flex items-center justify-between px-6 py-4 border-b">
+            <h2 class="text-lg font-semibold text-gray-900">Recent Orders</h2>
+            <a href="{{ route('dealer.orders') }}" class="text-sm text-blue-600 hover:text-blue-800">View all &rarr;</a>
+        </div>
+
+        @if ($recentOrders->isEmpty())
+            <div class="text-center py-10 px-6">
+                <svg class="w-12 h-12 mx-auto text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                </svg>
+                <p class="text-gray-500 font-medium mb-1">No orders yet</p>
+                <p class="text-sm text-gray-400 mb-4">Start by browsing our product catalog.</p>
+                <a href="{{ route('dealer.catalog') }}"
+                   class="inline-block bg-blue-600 text-white px-5 py-2 rounded text-sm hover:bg-blue-700">
+                    Browse Catalog
+                </a>
+            </div>
+        @else
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead class="bg-gray-50 text-xs text-gray-600 uppercase">
+                        <tr>
+                            <th class="px-6 py-3">Order #</th>
+                            <th class="px-6 py-3">Date</th>
+                            <th class="px-6 py-3">Items</th>
+                            <th class="px-6 py-3">Total</th>
+                            <th class="px-6 py-3">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($recentOrders as $order)
+                            <tr class="border-b last:border-b-0 hover:bg-gray-50">
+                                <td class="px-6 py-3">
+                                    <a href="{{ route('dealer.orders.view', $order->id) }}" class="text-blue-600 hover:text-blue-800 font-medium">
+                                        #{{ $order->increment_id ?? $order->id }}
+                                    </a>
+                                </td>
+                                <td class="px-6 py-3 text-gray-500">{{ \Carbon\Carbon::parse($order->created_at)->format('M d, Y') }}</td>
+                                <td class="px-6 py-3 text-gray-500">{{ $order->total_item_count }}</td>
+                                <td class="px-6 py-3 font-medium">${{ number_format($order->grand_total, 2) }}</td>
+                                <td class="px-6 py-3">
+                                    @php
+                                        $statusColors = match($order->status) {
+                                            'completed', 'closed' => 'bg-green-100 text-green-800',
+                                            'canceled', 'fraud' => 'bg-red-100 text-red-800',
+                                            default => 'bg-yellow-100 text-yellow-800',
+                                        };
+                                    @endphp
+                                    <span class="inline-block px-2 py-0.5 rounded-full text-xs font-medium {{ $statusColors }}">
+                                        {{ ucfirst($order->status) }}
+                                    </span>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @endif
+    </div>
+
     {{-- Quick Links --}}
     <div class="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
         <a href="{{ route('dealer.catalog') }}"
