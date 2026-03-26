@@ -5,7 +5,6 @@ namespace Rydeen\Dealer\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Password;
 use Webkul\Customer\Models\Customer;
 use Webkul\User\Models\Admin;
 use Rydeen\Dealer\Mail\CompanyInvitationMail;
@@ -113,11 +112,10 @@ class DealerApprovalController extends Controller
             return redirect()->back()->with('error', trans('rydeen-dealer::app.admin.invitation-not-company'));
         }
 
-        $token = Password::broker('customers')->createToken($customer);
-        $resetUrl = url('/reset-password/' . $token . '?email=' . urlencode($customer->email));
+        $loginUrl = route('dealer.login');
 
         try {
-            Mail::to($customer->email)->send(new CompanyInvitationMail($customer, $resetUrl));
+            Mail::to($customer->email)->send(new CompanyInvitationMail($customer, $loginUrl));
         } catch (\Exception $e) {
             report($e);
 

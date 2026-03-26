@@ -10,13 +10,13 @@
 
         <p style="color: #333; font-size: 16px;">Hi {{ $dealer->first_name }},</p>
 
-        <p style="color: #333; font-size: 16px;">You've been invited to the Rydeen Dealer Portal. To get started, set your password by clicking the button below.</p>
+        <p style="color: #333; font-size: 16px;">You've been invited to the Rydeen Dealer Portal. Log in with your email to browse our catalog, place orders, and access dealer resources.</p>
 
         <div style="text-align: center; margin: 32px 0;">
-            <a href="{{ $resetUrl }}" style="display: inline-block; background: #2563eb; color: #ffffff; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-size: 16px; font-weight: bold;">Set Your Password</a>
+            <a href="{{ $loginUrl }}" style="display: inline-block; background: #FFD200; color: #000000; padding: 14px 32px; text-decoration: none; border-radius: 6px; font-size: 16px; font-weight: bold;">Log In to Your Account</a>
         </div>
 
-        <p style="color: #666; font-size: 14px;">Once you've set your password, you can log in at any time to browse our catalog, place orders, and access dealer resources.</p>
+        <p style="color: #666; font-size: 14px;">When you log in, you'll receive a verification code to your email. Enter the code to access the portal.</p>
 
         <p style="color: #666; font-size: 14px; margin-top: 24px;">
             If you have any questions, please contact us at {{ config('rydeen.admin_order_email') }}.

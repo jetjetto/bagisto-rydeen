@@ -3,7 +3,6 @@
 namespace Rydeen\Dealer\Listeners;
 
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Password;
 use Rydeen\Dealer\Mail\CompanyInvitationMail;
 
 class CompanyInvitationListener
@@ -14,12 +13,10 @@ class CompanyInvitationListener
             return;
         }
 
-        $token = Password::broker('customers')->createToken($customer);
-
-        $resetUrl = url('/reset-password/' . $token . '?email=' . urlencode($customer->email));
+        $loginUrl = route('dealer.login');
 
         try {
-            Mail::to($customer->email)->send(new CompanyInvitationMail($customer, $resetUrl));
+            Mail::to($customer->email)->send(new CompanyInvitationMail($customer, $loginUrl));
 
             session()->flash('info', "Onboarding email sent to {$customer->email}");
         } catch (\Exception $e) {

@@ -13,7 +13,7 @@ class CompanyInvitationMail extends Mailable
 
     public function __construct(
         public $dealer,
-        public string $resetUrl,
+        public string $loginUrl,
     ) {}
 
     public function envelope(): Envelope
