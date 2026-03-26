@@ -2,8 +2,11 @@
 
 namespace Rydeen\Core\Providers;
 
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
+use Rydeen\Core\Console\Commands\SyncCustomerFlat;
+use Rydeen\Core\Listeners\CustomerFlatSync;
 
 class CoreServiceProvider extends ServiceProvider
 {
@@ -19,6 +22,14 @@ class CoreServiceProvider extends ServiceProvider
 
         // Ensure B2B Suite is activated
         $this->ensureB2BActive();
+
+        // Patch customer_flat with fields the B2B FlatIndexer misses
+        Event::listen('customer.registration.after', [CustomerFlatSync::class, 'afterUpdate']);
+        Event::listen('customer.update.after', [CustomerFlatSync::class, 'afterUpdate']);
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([SyncCustomerFlat::class]);
+        }
     }
 
     protected function ensureB2BActive(): void
