@@ -35,6 +35,92 @@ it('generates url_key from sku and name when url_key is empty', function () {
     expect($urlKey)->toBe('test-001-rydeen-backup-camera');
 });
 
+it('falls back to sku only when name is empty', function () {
+    $this->product = createTestProduct('TEST-002');
+
+    $this->listener->afterSave($this->product);
+
+    $urlKey = DB::table('product_attribute_values')
+        ->where('product_id', $this->product->id)
+        ->where('attribute_id', $this->urlKeyAttributeId)
+        ->value('text_value');
+
+    expect($urlKey)->toBe('test-002');
+});
+
+it('does not overwrite existing url_key', function () {
+    $this->product = createTestProduct('TEST-003', 'Some Product');
+
+    $channelCode = DB::table('channels')->value('code') ?? 'default';
+    $localeCode = DB::table('locales')->value('code') ?? 'en';
+    $urlKeyAttributeId = DB::table('attributes')->where('code', 'url_key')->value('id');
+
+    // Manually set a url_key before calling the listener
+    DB::table('product_attribute_values')->insert([
+        'product_id'   => $this->product->id,
+        'attribute_id' => $urlKeyAttributeId,
+        'text_value'   => 'my-custom-slug',
+        'channel'      => $channelCode,
+        'locale'       => $localeCode,
+        'unique_id'    => implode('|', [$channelCode, $localeCode, $this->product->id, $urlKeyAttributeId]),
+    ]);
+
+    $this->listener->afterSave($this->product);
+
+    $urlKey = DB::table('product_attribute_values')
+        ->where('product_id', $this->product->id)
+        ->where('attribute_id', $urlKeyAttributeId)
+        ->value('text_value');
+
+    expect($urlKey)->toBe('my-custom-slug');
+});
+
+it('appends suffix when slug already exists for another product', function () {
+    // Create first product — SKU "TEST-004" slugifies to "test-004"
+    $this->product = createTestProduct('TEST-004', 'Duplicate Name');
+    $this->listener->afterSave($this->product);
+
+    // Create second product — SKU "TEST--004" also slugifies to "test-004" (duplicate hyphens collapse),
+    // so both products produce the same base slug "test-004-duplicate-name".
+    $secondProduct = createTestProduct('TEST--004', 'Duplicate Name');
+    $this->listener->afterSave($secondProduct);
+
+    $urlKeyAttributeId = DB::table('attributes')->where('code', 'url_key')->value('id');
+
+    $firstUrlKey = DB::table('product_attribute_values')
+        ->where('product_id', $this->product->id)
+        ->where('attribute_id', $urlKeyAttributeId)
+        ->value('text_value');
+
+    $secondUrlKey = DB::table('product_attribute_values')
+        ->where('product_id', $secondProduct->id)
+        ->where('attribute_id', $urlKeyAttributeId)
+        ->value('text_value');
+
+    expect($firstUrlKey)->toBe('test-004-duplicate-name');
+    expect($secondUrlKey)->toBe('test-004-duplicate-name-1');
+
+    // Cleanup second product
+    DB::table('product_attribute_values')->where('product_id', $secondProduct->id)->delete();
+    DB::table('product_flat')->where('product_id', $secondProduct->id)->delete();
+    DB::table('product_categories')->where('product_id', $secondProduct->id)->delete();
+    DB::table('product_channels')->where('product_id', $secondProduct->id)->delete();
+    DB::table('products')->where('id', $secondProduct->id)->delete();
+});
+
+it('handles unicode characters and diacriticals in names', function () {
+    $this->product = createTestProduct('TEST-005', 'Camara Retrovisora Electonica');
+
+    $this->listener->afterSave($this->product);
+
+    $urlKey = DB::table('product_attribute_values')
+        ->where('product_id', $this->product->id)
+        ->where('attribute_id', $this->urlKeyAttributeId)
+        ->value('text_value');
+
+    expect($urlKey)->toBe('test-005-camara-retrovisora-electonica');
+});
+
 /**
  * Create a simple product with a name attribute value but no url_key.
  */
