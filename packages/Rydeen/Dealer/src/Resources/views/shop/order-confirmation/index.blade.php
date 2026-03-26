@@ -19,6 +19,10 @@
                 @lang('rydeen-dealer::app.shop.orders.confirmation-message', ['id' => $order->increment_id ?? $order->id])
             </p>
 
+            <p class="text-sm text-amber-700 bg-amber-50 rounded px-3 py-2 mb-4">
+                Orders require admin review before processing.
+            </p>
+
             <div class="bg-gray-50 rounded p-4 mb-6 text-sm">
                 <p><strong>@lang('rydeen-dealer::app.shop.orders.order-number'):</strong> #{{ $order->increment_id ?? $order->id }}</p>
                 <p><strong>@lang('rydeen-dealer::app.shop.orders.items'):</strong> {{ $order->total_item_count }}</p>
