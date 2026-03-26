@@ -4,7 +4,10 @@ namespace Rydeen\Auth\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Str;
 use Rydeen\Auth\Services\AuthService;
+use Webkul\Customer\Models\Customer;
+use Webkul\Customer\Models\CustomerGroup;
 
 class LoginController extends Controller
 {
@@ -110,6 +113,49 @@ class LoginController extends Controller
         $cookie = cookie('rydeen_device', $uuid, config('rydeen.device_trust_days', 30) * 24 * 60);
 
         return redirect()->route('dealer.dashboard')->withCookie($cookie);
+    }
+
+    /**
+     * Show the dealer registration form.
+     */
+    public function showRegister()
+    {
+        if (auth('customer')->check()) {
+            return redirect()->route('dealer.dashboard');
+        }
+
+        return view('rydeen-auth::register');
+    }
+
+    /**
+     * Handle dealer registration (creates a pending account).
+     */
+    public function register(Request $request)
+    {
+        $request->validate([
+            'first_name'    => 'required|string|max:255',
+            'last_name'     => 'required|string|max:255',
+            'email'         => 'required|email|unique:customers,email',
+            'business_name' => 'required|string|max:255',
+            'phone'         => 'nullable|string|max:50',
+        ]);
+
+        $customerGroup = CustomerGroup::where('code', 'new-dealers')->first();
+
+        Customer::create([
+            'first_name'        => $request->first_name,
+            'last_name'         => $request->last_name,
+            'email'             => $request->email,
+            'phone'             => $request->phone,
+            'password'          => bcrypt(Str::random(32)),
+            'is_verified'       => 0,
+            'status'            => 0,
+            'customer_group_id' => $customerGroup?->id,
+            'channel_id'        => core()->getCurrentChannel()->id,
+        ]);
+
+        return redirect()->route('dealer.login')
+            ->with('success', 'Your application has been submitted. You will receive an email once your account is approved.');
     }
 
     /**

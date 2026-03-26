@@ -10,6 +10,12 @@
             <p class="mt-2 text-gray-600">{{ trans('rydeen-auth::app.login-title') }}</p>
         </div>
 
+        @if (session('success'))
+            <div class="mb-4 p-3 bg-green-50 border border-green-200 rounded text-green-700 text-sm">
+                <p>{{ session('success') }}</p>
+            </div>
+        @endif
+
         @if ($errors->any())
             <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded text-red-700 text-sm">
                 @foreach ($errors->all() as $error)
@@ -57,6 +63,10 @@
                 Sign In
             </button>
         </form>
+
+        <p class="mt-4 text-center text-sm text-gray-600">
+            Not a dealer yet? <a href="{{ route('dealer.register') }}" class="text-blue-600 hover:text-blue-800 font-medium">Apply for an account</a>
+        </p>
     </div>
 </div>
 @endsection
