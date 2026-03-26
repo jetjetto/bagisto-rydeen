@@ -36,6 +36,6 @@ php artisan optimize || echo "WARNING: optimize failed"
 echo "=== Sending test email ==="
 php artisan rydeen:test-email zacharyamith@outlook.com || echo "WARNING: test email failed"
 
-echo "=== Starting server on port ${PORT:-8080} ==="
-export PHP_CLI_SERVER_WORKERS=8
-exec php artisan serve --host=0.0.0.0 --port=${PORT:-8080}
+echo "=== Starting Octane (FrankenPHP) on port ${PORT:-8080} ==="
+php artisan octane:install --server=frankenphp 2>&1 || { echo "ERROR: FrankenPHP install failed"; exit 1; }
+exec php artisan octane:start --server=frankenphp --host=0.0.0.0 --port=${PORT:-8080} --workers=4 --max-requests=500
