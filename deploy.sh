@@ -2,12 +2,16 @@
 set -e
 echo "=== Railway Deploy ==="
 
-# Clear build-phase cache (direct file removal, no PHP boot needed)
+# Clear build-phase cache
 rm -f bootstrap/cache/config.php
 rm -f bootstrap/cache/routes-v7.php
 rm -f bootstrap/cache/services.php
 rm -f bootstrap/cache/packages.php
 rm -f bootstrap/cache/events.php
+
+# Run composer scripts skipped during build (package:discover needs DB)
+composer dump-autoload --optimize 2>/dev/null || true
+php artisan package:discover --ansi 2>/dev/null || true
 
 # Check if this is a first deploy by attempting a safe artisan command
 php artisan migrate:status > /dev/null 2>&1
