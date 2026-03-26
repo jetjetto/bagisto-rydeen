@@ -9,7 +9,7 @@ class SyncCustomerFlat extends Command
 {
     protected $signature = 'rydeen:sync-customer-flat';
 
-    protected $description = 'Backfill first_name, last_name, business_name into customer_flat from customers table';
+    protected $description = 'Backfill first_name, last_name into customer_flat from customers table, and business_name from customer_attribute_values';
 
     public function handle(): int
     {
@@ -30,10 +30,8 @@ class SyncCustomerFlat extends Command
                 UPDATE customer_flat
                 JOIN customer_attribute_values ON customer_attribute_values.customer_id = customer_flat.customer_id
                     AND customer_attribute_values.company_attribute_id = ?
-                SET customer_flat.business_name = COALESCE(
-                    customer_attribute_values.text_value,
-                    customer_attribute_values.varchar_value
-                )
+                    AND (customer_attribute_values.locale = customer_flat.locale OR customer_attribute_values.locale IS NULL)
+                SET customer_flat.business_name = customer_attribute_values.text_value
             ', [$businessAttr->id]);
 
             $this->info("Updated {$bizUpdated} customer_flat rows with business_name.");

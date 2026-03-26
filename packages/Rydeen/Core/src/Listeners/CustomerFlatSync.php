@@ -8,7 +8,10 @@ class CustomerFlatSync
 {
     /**
      * Patch customer_flat with fields the B2B FlatIndexer misses:
-     * first_name, last_name, business_name.
+     * first_name, last_name.
+     *
+     * Note: business_name is a custom attribute (not a column on customers),
+     * so the B2B FlatIndexer handles it via customer_attribute_values.
      */
     public function afterUpdate($customer): void
     {
@@ -19,9 +22,8 @@ class CustomerFlatSync
         DB::table('customer_flat')
             ->where('customer_id', $customer->id)
             ->update([
-                'first_name'    => $customer->first_name,
-                'last_name'     => $customer->last_name,
-                'business_name' => $customer->business_name,
+                'first_name' => $customer->first_name,
+                'last_name'  => $customer->last_name,
             ]);
     }
 }
