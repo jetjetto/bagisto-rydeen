@@ -4,6 +4,7 @@ namespace Rydeen\Dealer\Providers;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Rydeen\Dealer\Listeners\OrderListener;
+use Rydeen\Dealer\Listeners\ProductListener;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -15,6 +16,14 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         'checkout.order.save.after' => [
             [OrderListener::class, 'afterOrderCreated'],
+        ],
+
+        'catalog.product.create.after' => [
+            [ProductListener::class, 'afterSave'],
+        ],
+
+        'catalog.product.update.after' => [
+            [ProductListener::class, 'afterSave'],
         ],
     ];
 }
