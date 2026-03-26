@@ -88,21 +88,106 @@
                     </div>
                 @endforeach
 
-                {{-- Order Notes --}}
-                <div class="bg-white rounded-lg shadow p-4 mt-4">
-                    <form id="place-order-form" action="{{ route('dealer.order-review.place') }}" method="POST">
-                        @csrf
+                <form id="place-order-form" action="{{ route('dealer.order-review.place') }}" method="POST">
+                    @csrf
+
+                    {{-- Customer Contact --}}
+                    <div class="bg-white rounded-lg shadow p-4 mt-4" x-data="contactWidget()">
+                        <h2 class="text-sm font-semibold text-gray-900 mb-3">Customer Contact <span class="text-red-500">*</span></h2>
+
+                        {{-- Selected contact display --}}
+                        <template x-if="selectedContact">
+                            <div class="flex items-center justify-between bg-gray-50 border border-gray-200 rounded p-3">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900" x-text="selectedContact.first_name + ' ' + selectedContact.last_name"></p>
+                                    <p class="text-xs text-gray-500" x-text="selectedContact.email"></p>
+                                    <p class="text-xs text-gray-500" x-show="selectedContact.phone" x-text="selectedContact.phone"></p>
+                                </div>
+                                <button type="button" @click="clearSelection()" class="text-sm text-gray-600 hover:text-gray-900 underline">Change</button>
+                            </div>
+                        </template>
+
+                        {{-- Search / Add toggle --}}
+                        <template x-if="!selectedContact">
+                            <div>
+                                {{-- Search box --}}
+                                <div class="relative">
+                                    <input type="text"
+                                           x-model="searchQuery"
+                                           @input.debounce.300ms="doSearch()"
+                                           @focus="showDropdown = true"
+                                           placeholder="Search contacts by name, email, or phone..."
+                                           class="w-full border border-gray-300 rounded px-3 py-2 text-sm">
+
+                                    {{-- Dropdown results --}}
+                                    <div x-show="showDropdown && results.length > 0"
+                                         @click.outside="showDropdown = false"
+                                         class="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded shadow-lg max-h-48 overflow-y-auto">
+                                        <template x-for="contact in results" :key="contact.id">
+                                            <button type="button"
+                                                    @click="selectContact(contact)"
+                                                    class="w-full text-left px-3 py-2 hover:bg-gray-50 border-b border-gray-100 last:border-0">
+                                                <p class="text-sm font-medium text-gray-900" x-text="contact.first_name + ' ' + contact.last_name"></p>
+                                                <p class="text-xs text-gray-500" x-text="contact.email"></p>
+                                            </button>
+                                        </template>
+                                    </div>
+
+                                    {{-- No results --}}
+                                    <div x-show="showDropdown && searchQuery.length >= 2 && results.length === 0 && !searching"
+                                         class="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded shadow-lg p-3">
+                                        <p class="text-sm text-gray-500">No contacts found.</p>
+                                    </div>
+                                </div>
+
+                                {{-- Add new toggle --}}
+                                <button type="button" @click="showAddForm = !showAddForm"
+                                        class="mt-2 text-sm text-gray-700 hover:text-gray-900 underline">
+                                    <span x-text="showAddForm ? 'Cancel' : '+ Add New Contact'"></span>
+                                </button>
+
+                                {{-- Add new form --}}
+                                <div x-show="showAddForm" x-transition class="mt-3 space-y-2 border-t border-gray-200 pt-3">
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <input type="text" x-model="newContact.first_name" placeholder="First Name *"
+                                               class="border border-gray-300 rounded px-3 py-2 text-sm">
+                                        <input type="text" x-model="newContact.last_name" placeholder="Last Name *"
+                                               class="border border-gray-300 rounded px-3 py-2 text-sm">
+                                    </div>
+                                    <input type="email" x-model="newContact.email" placeholder="Email *"
+                                           class="w-full border border-gray-300 rounded px-3 py-2 text-sm">
+                                    <input type="text" x-model="newContact.phone" placeholder="Phone (optional)"
+                                           class="w-full border border-gray-300 rounded px-3 py-2 text-sm">
+                                    <textarea x-model="newContact.notes" placeholder="Notes (optional)" rows="2"
+                                              class="w-full border border-gray-300 rounded px-3 py-2 text-sm"></textarea>
+
+                                    <p x-show="addError" x-text="addError" class="text-xs text-red-600"></p>
+
+                                    <button type="button" @click="createContact()"
+                                            :disabled="saving"
+                                            class="bg-gray-900 text-white px-4 py-2 rounded text-sm hover:bg-black disabled:opacity-50">
+                                        <span x-show="!saving">Save & Select</span>
+                                        <span x-show="saving">Saving...</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </template>
+
+                        {{-- Hidden input for form submission --}}
+                        <input type="hidden" name="dealer_contact_id" :value="selectedContact ? selectedContact.id : ''">
+                    </div>
+
+                    {{-- Order Notes --}}
+                    <div class="bg-white rounded-lg shadow p-4 mt-4">
                         <label for="notes" class="block text-sm font-medium text-gray-700 mb-1">
                             Order Notes
                         </label>
-                        <textarea name="notes"
-                                  id="notes"
-                                  rows="3"
+                        <textarea name="notes" id="notes" rows="3"
                                   class="w-full border border-gray-300 rounded px-3 py-2 text-sm"
                                   placeholder="Add any special instructions for your order..."></textarea>
                         <p class="text-xs text-gray-500 mt-1">Notes will be read by a Rydeen Specialist.</p>
-                    </form>
-                </div>
+                    </div>
+                </form>
             </div>
 
             {{-- Right Column: Order Summary --}}
@@ -133,7 +218,12 @@
 
                     <button type="submit"
                             form="place-order-form"
-                            class="mt-6 w-full bg-yellow-400 text-gray-900 font-semibold py-3 px-4 rounded hover:bg-yellow-500 transition text-sm">
+                            x-data="{ contactSelected: false }"
+                            @contact-selected.window="contactSelected = true"
+                            @contact-cleared.window="contactSelected = false"
+                            :disabled="!contactSelected"
+                            :class="contactSelected ? 'bg-yellow-400 hover:bg-yellow-500' : 'bg-gray-300 cursor-not-allowed'"
+                            class="mt-6 w-full text-gray-900 font-semibold py-3 px-4 rounded transition text-sm">
                         Place Order
                     </button>
 
@@ -166,3 +256,83 @@
         </div>
     @endif
 @endsection
+
+@push('scripts')
+<script>
+function contactWidget() {
+    return {
+        searchQuery: '',
+        results: [],
+        selectedContact: null,
+        showDropdown: false,
+        showAddForm: false,
+        searching: false,
+        saving: false,
+        addError: '',
+        newContact: { first_name: '', last_name: '', email: '', phone: '', notes: '' },
+
+        async doSearch() {
+            if (this.searchQuery.length < 2) {
+                this.results = [];
+                return;
+            }
+            this.searching = true;
+            try {
+                const res = await fetch(`{{ route('dealer.contacts.search') }}?q=${encodeURIComponent(this.searchQuery)}`);
+                this.results = await res.json();
+            } catch (e) {
+                this.results = [];
+            }
+            this.searching = false;
+            this.showDropdown = true;
+        },
+
+        selectContact(contact) {
+            this.selectedContact = contact;
+            this.showDropdown = false;
+            this.searchQuery = '';
+            this.results = [];
+            this.$dispatch('contact-selected');
+        },
+
+        clearSelection() {
+            this.selectedContact = null;
+            this.$dispatch('contact-cleared');
+        },
+
+        async createContact() {
+            this.addError = '';
+            if (!this.newContact.first_name || !this.newContact.last_name || !this.newContact.email) {
+                this.addError = 'First name, last name, and email are required.';
+                return;
+            }
+            this.saving = true;
+            try {
+                const res = await fetch('{{ route("dealer.contacts.store") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify(this.newContact),
+                });
+                if (!res.ok) {
+                    const err = await res.json();
+                    this.addError = err.message || 'Failed to create contact.';
+                    this.saving = false;
+                    return;
+                }
+                const contact = await res.json();
+                this.selectContact(contact);
+                this.showAddForm = false;
+                this.newContact = { first_name: '', last_name: '', email: '', phone: '', notes: '' };
+            } catch (e) {
+                this.addError = 'Network error. Please try again.';
+            }
+            this.saving = false;
+        },
+    };
+}
+</script>
+@endpush
