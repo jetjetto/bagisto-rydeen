@@ -20,6 +20,18 @@
         </div>
     @endif
 
+    @if (session('stock_warnings'))
+        <div class="mb-4 p-4 rounded bg-yellow-50 border border-yellow-200 text-yellow-800 text-sm">
+            <p class="font-semibold mb-2">Stock Warning — Insufficient inventory for the following items:</p>
+            <ul class="list-disc list-inside space-y-1">
+                @foreach (session('stock_warnings') as $warning)
+                    <li>{{ $warning }}</li>
+                @endforeach
+            </ul>
+            <p class="mt-2 text-xs">Click "Approve Anyway" to override and approve this order.</p>
+        </div>
+    @endif
+
     {{-- Order Info --}}
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
         <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">
@@ -167,13 +179,18 @@
             Actions
         </h2>
 
+        @php $isRep = auth('admin')->user()?->role?->name === 'Sales Rep'; @endphp
+
         <div class="flex flex-wrap gap-3">
             @if ($order->status === 'pending')
                 <form action="{{ route('admin.rydeen.orders.approve', $order->id) }}" method="POST">
                     @csrf
+                    @if (session('stock_warnings'))
+                        <input type="hidden" name="confirm_override" value="1">
+                    @endif
                     <button type="submit"
                             class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm font-medium">
-                        Approve Order
+                        {{ session('stock_warnings') ? 'Approve Anyway' : 'Approve Order' }}
                     </button>
                 </form>
             @endif
@@ -188,16 +205,18 @@
                 </form>
             @endif
 
-            @if ($order->status !== 'canceled')
-                <form action="{{ route('admin.rydeen.orders.cancel', $order->id) }}" method="POST"
-                      onsubmit="return confirm('Are you sure you want to cancel this order? This action cannot be undone.')">
-                    @csrf
-                    <button type="submit"
-                            class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 text-sm font-medium">
-                        Cancel Order
-                    </button>
-                </form>
-            @endif
+            @unless ($isRep)
+                @if ($order->status !== 'canceled')
+                    <form action="{{ route('admin.rydeen.orders.cancel', $order->id) }}" method="POST"
+                          onsubmit="return confirm('Are you sure you want to cancel this order? This action cannot be undone.')">
+                        @csrf
+                        <button type="submit"
+                                class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 text-sm font-medium">
+                            Cancel Order
+                        </button>
+                    </form>
+                @endif
+            @endunless
         </div>
     </div>
 </x-admin::layouts>

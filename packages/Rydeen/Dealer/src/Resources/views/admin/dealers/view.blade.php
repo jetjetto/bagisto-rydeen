@@ -77,8 +77,10 @@
     </div>
 
     {{-- Actions --}}
+    @php $isRep = auth('admin')->user()?->role?->name === 'Sales Rep'; @endphp
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         {{-- Approve / Reject --}}
+        @unless ($isRep)
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <h3 class="text-md font-semibold text-gray-800 dark:text-white mb-4">
                 @lang('rydeen-dealer::app.admin.approval-actions')
@@ -122,8 +124,10 @@
                 @endif
             </div>
         </div>
+        @endunless
 
         {{-- Assign Rep --}}
+        @unless ($isRep)
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <h3 class="text-md font-semibold text-gray-800 dark:text-white mb-4">
                 @lang('rydeen-dealer::app.admin.assign-rep')
@@ -150,6 +154,7 @@
                 </button>
             </form>
         </div>
+        @endunless
 
         {{-- Forecast Level --}}
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
