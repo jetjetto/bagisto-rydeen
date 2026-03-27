@@ -38,8 +38,10 @@ return [
         'assign-rep'       => 'Assign Sales Rep',
         'sales-rep'        => 'Sales Rep',
 
-        'dealer-approved'  => 'Dealer has been approved.',
-        'dealer-rejected'  => 'Dealer has been suspended.',
+        'dealer-approved'    => 'Dealer has been approved.',
+        'dealer-rejected'    => 'Dealer has been suspended.',
+        'dealer-unsuspended' => 'Dealer has been unsuspended and is now pending approval.',
+        'unsuspend'          => 'Unsuspend',
         'rep-assigned'     => 'Sales rep has been assigned.',
         'address-approved' => 'Address has been approved.',
         'forecast-updated'       => 'Forecast level has been updated.',

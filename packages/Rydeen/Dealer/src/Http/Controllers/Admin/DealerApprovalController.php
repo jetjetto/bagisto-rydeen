@@ -80,9 +80,25 @@ class DealerApprovalController extends Controller
         $dealer = Customer::findOrFail($id);
 
         $dealer->is_suspended = 1;
+        $dealer->is_verified = 0;
+        $dealer->status = 0;
+        $dealer->approved_at = null;
         $dealer->save();
 
         return redirect()->back()->with('success', trans('rydeen-dealer::app.admin.dealer-rejected'));
+    }
+
+    /**
+     * Unsuspend a dealer — clear suspension and restore pending state.
+     */
+    public function unsuspend(int $id)
+    {
+        $dealer = Customer::findOrFail($id);
+
+        $dealer->is_suspended = 0;
+        $dealer->save();
+
+        return redirect()->back()->with('success', trans('rydeen-dealer::app.admin.dealer-unsuspended'));
     }
 
     /**

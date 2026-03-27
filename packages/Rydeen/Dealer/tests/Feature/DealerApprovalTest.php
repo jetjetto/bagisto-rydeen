@@ -42,9 +42,13 @@ it('admin can approve dealer', function () {
     DB::table('customers')->where('id', $customerId)->delete();
 });
 
-it('admin can reject dealer', function () {
+it('admin can reject dealer and approval state is reset', function () {
     $admin = getTestAdmin();
     $customerId = createPendingDealer();
+
+    // First approve, then reject — to verify approval state gets cleared
+    $this->actingAs($admin, 'admin')
+        ->post(route('admin.rydeen.dealers.approve', $customerId));
 
     $response = $this->actingAs($admin, 'admin')
         ->post(route('admin.rydeen.dealers.reject', $customerId));
@@ -53,6 +57,30 @@ it('admin can reject dealer', function () {
 
     $customer = DB::table('customers')->find($customerId);
     expect($customer->is_suspended)->toBe(1);
+    expect($customer->is_verified)->toBe(0);
+    expect((int) $customer->status)->toBe(0);
+    expect($customer->approved_at)->toBeNull();
+
+    // Cleanup
+    DB::table('customers')->where('id', $customerId)->delete();
+});
+
+it('admin can unsuspend a suspended dealer', function () {
+    $admin = getTestAdmin();
+    $customerId = createPendingDealer();
+
+    // Reject first to suspend
+    $this->actingAs($admin, 'admin')
+        ->post(route('admin.rydeen.dealers.reject', $customerId));
+
+    // Now unsuspend
+    $response = $this->actingAs($admin, 'admin')
+        ->post(route('admin.rydeen.dealers.unsuspend', $customerId));
+
+    $response->assertRedirect();
+
+    $customer = DB::table('customers')->find($customerId);
+    expect($customer->is_suspended)->toBe(0);
 
     // Cleanup
     DB::table('customers')->where('id', $customerId)->delete();

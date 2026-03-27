@@ -20,6 +20,22 @@
         </div>
     @endif
 
+    @if (session('error'))
+        <div class="mb-4 p-3 rounded bg-red-100 text-red-800 text-sm">
+            {{ session('error') }}
+        </div>
+    @endif
+
+    @if ($errors->any())
+        <div class="mb-4 p-3 rounded bg-red-100 text-red-800 text-sm">
+            <ul class="list-disc list-inside">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     {{-- Dealer Info --}}
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
         <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">
@@ -97,10 +113,18 @@
                 @endif
 
                 @if (! $dealer->is_suspended)
-                    <form action="{{ route('admin.rydeen.dealers.reject', $dealer->id) }}" method="POST">
+                    <form action="{{ route('admin.rydeen.dealers.reject', $dealer->id) }}" method="POST"
+                          onsubmit="return confirm('Are you sure you want to suspend this dealer? They will lose access immediately.')">
                         @csrf
                         <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 text-sm">
                             @lang('rydeen-dealer::app.admin.reject')
+                        </button>
+                    </form>
+                @else
+                    <form action="{{ route('admin.rydeen.dealers.unsuspend', $dealer->id) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm">
+                            @lang('rydeen-dealer::app.admin.unsuspend')
                         </button>
                     </form>
                 @endif
@@ -117,7 +141,11 @@
                 @if ($dealer->is_verified && ! $dealer->is_suspended)
                     <form action="{{ route('admin.rydeen.dealers.impersonate', $dealer->id) }}" method="POST">
                         @csrf
-                        <button type="submit" class="px-4 py-2 bg-amber-500 text-white rounded hover:bg-amber-600 text-sm">
+                        <button type="submit"
+                                class="px-4 py-2 rounded text-sm font-medium text-white"
+                                style="background-color: #f59e0b;"
+                                onmouseover="this.style.backgroundColor='#d97706'"
+                                onmouseout="this.style.backgroundColor='#f59e0b'">
                             @lang('rydeen-dealer::app.admin.impersonate')
                         </button>
                     </form>
