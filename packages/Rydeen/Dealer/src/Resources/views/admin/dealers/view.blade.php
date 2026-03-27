@@ -180,4 +180,51 @@
             </form>
         </div>
     </div>
+
+    {{-- Shipping Addresses --}}
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mt-6">
+        <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">
+            Shipping Addresses
+        </h2>
+
+        @php
+            $addresses = \Rydeen\Dealer\Models\DealerAddress::forDealer($dealer->id)
+                ->orderByDesc('created_at')
+                ->get();
+        @endphp
+
+        @if ($addresses->isEmpty())
+            <p class="text-sm text-gray-500">No shipping addresses on file.</p>
+        @else
+            <div class="space-y-3">
+                @foreach ($addresses as $address)
+                    <div class="flex items-start justify-between border border-gray-200 dark:border-gray-700 rounded p-3">
+                        <div class="text-sm">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="font-medium text-gray-900 dark:text-white">{{ $address->label }}</span>
+                                @if ($address->is_approved)
+                                    <span class="px-2 py-0.5 text-xs font-medium rounded bg-green-100 text-green-800">Approved</span>
+                                @else
+                                    <span class="px-2 py-0.5 text-xs font-medium rounded bg-yellow-100 text-yellow-800">Pending</span>
+                                @endif
+                            </div>
+                            <p class="text-gray-600 dark:text-gray-400">
+                                {{ $address->first_name }} {{ $address->last_name }}
+                                @if ($address->company_name) &mdash; {{ $address->company_name }} @endif
+                            </p>
+                            <p class="text-gray-500 dark:text-gray-400">{{ $address->formatted_address }}</p>
+                        </div>
+                        @if (! $address->is_approved)
+                            <form action="{{ route('admin.rydeen.dealers.approve-address', [$dealer->id, $address->id]) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="px-3 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700">
+                                    Approve
+                                </button>
+                            </form>
+                        @endif
+                    </div>
+                @endforeach
+            </div>
+        @endif
+    </div>
 </x-admin::layouts>

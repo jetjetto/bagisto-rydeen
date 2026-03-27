@@ -91,6 +91,33 @@
                 <form id="place-order-form" action="{{ route('dealer.order-review.place') }}" method="POST">
                     @csrf
 
+                    {{-- Shipping Address --}}
+                    <div class="bg-white rounded-lg shadow p-4 mt-4">
+                        <h2 class="text-sm font-semibold text-gray-900 mb-3">Shipping Address</h2>
+
+                        @php
+                            $approvedAddresses = \Rydeen\Dealer\Models\DealerAddress::forDealer(auth('customer')->id())
+                                ->approved()
+                                ->get();
+                        @endphp
+
+                        @if ($approvedAddresses->isEmpty())
+                            <p class="text-sm text-gray-500">
+                                No approved shipping addresses.
+                                <a href="{{ route('dealer.addresses') }}" class="text-gray-900 underline">Add one in your Address Book</a>.
+                            </p>
+                        @else
+                            <select name="dealer_address_id" class="w-full border border-gray-300 rounded px-3 py-2 text-sm">
+                                <option value="">— Select address (optional) —</option>
+                                @foreach ($approvedAddresses as $addr)
+                                    <option value="{{ $addr->id }}">
+                                        {{ $addr->label }}: {{ $addr->formatted_address }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        @endif
+                    </div>
+
                     {{-- Customer Contact --}}
                     <div class="bg-white rounded-lg shadow p-4 mt-4" x-data="contactWidget()">
                         <h2 class="text-sm font-semibold text-gray-900 mb-3">Customer Contact <span class="text-red-500">*</span></h2>

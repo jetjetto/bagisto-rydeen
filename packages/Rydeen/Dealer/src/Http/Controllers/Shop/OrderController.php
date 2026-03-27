@@ -140,7 +140,8 @@ class OrderController extends Controller
     public function placeOrder(Request $request)
     {
         $request->validate([
-            'dealer_contact_id' => 'required|integer',
+            'dealer_contact_id'  => 'required|integer',
+            'dealer_address_id'  => 'nullable|integer',
         ]);
 
         $cart = Cart::getCart();
@@ -198,6 +199,13 @@ class OrderController extends Controller
             \Illuminate\Support\Facades\DB::table('orders')
                 ->where('id', $order->id)
                 ->update(['dealer_contact_id' => $contact->id]);
+        }
+
+        // Save dealer address if selected
+        if ($request->dealer_address_id) {
+            \Illuminate\Support\Facades\DB::table('orders')
+                ->where('id', $order->id)
+                ->update(['dealer_address_id' => $request->dealer_address_id]);
         }
 
         // Deactivate the cart
