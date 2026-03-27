@@ -48,21 +48,27 @@ class CatalogController extends Controller
         // Resolve prices with PriceResolver
         $prices = [];
 
-        if ($customer->customer_group_id) {
-            foreach ($products as $product) {
-                $groupPrice = $this->getGroupPrice($product, $customer->customer_group_id);
-                if ($groupPrice !== null) {
-                    $categoryIds = $product->categories->pluck('id')->toArray();
-                    $resolved = $this->priceResolver->resolve(
+        foreach ($products as $product) {
+            $msrp = (float) ($product->price ?? 0);
+            $groupPrice = $customer->customer_group_id
+                ? $this->getGroupPrice($product, $customer->customer_group_id)
+                : null;
+
+            $basePrice = $groupPrice ?? $msrp;
+
+            if ($basePrice > 0) {
+                $categoryIds = $product->categories->pluck('id')->toArray();
+                $resolved = $customer->customer_group_id
+                    ? $this->priceResolver->resolve(
                         $product->id,
-                        (float) $groupPrice,
+                        $basePrice,
                         $customer->customer_group_id,
                         1,
                         $categoryIds
-                    );
-                    $resolved['msrp'] = (float) $product->price;
-                    $prices[$product->id] = $resolved;
-                }
+                    )
+                    : ['price' => $basePrice, 'promo_name' => null];
+                $resolved['msrp'] = $msrp;
+                $prices[$product->id] = $resolved;
             }
         }
 
@@ -82,20 +88,26 @@ class CatalogController extends Controller
             abort(404);
         }
 
+        $msrp = (float) ($product->price ?? 0);
+        $groupPrice = $customer->customer_group_id
+            ? $this->getGroupPrice($product, $customer->customer_group_id)
+            : null;
+
+        $basePrice = $groupPrice ?? $msrp;
         $price = null;
-        if ($customer->customer_group_id) {
-            $groupPrice = $this->getGroupPrice($product, $customer->customer_group_id);
-            if ($groupPrice !== null) {
-                $categoryIds = $product->categories->pluck('id')->toArray();
-                $price = $this->priceResolver->resolve(
+
+        if ($basePrice > 0) {
+            $categoryIds = $product->categories->pluck('id')->toArray();
+            $price = $customer->customer_group_id
+                ? $this->priceResolver->resolve(
                     $product->id,
-                    (float) $groupPrice,
+                    $basePrice,
                     $customer->customer_group_id,
                     1,
                     $categoryIds
-                );
-                $price['msrp'] = (float) $product->price;
-            }
+                )
+                : ['price' => $basePrice, 'promo_name' => null];
+            $price['msrp'] = $msrp;
         }
 
         return view('rydeen-dealer::shop.catalog.product', compact('product', 'customer', 'price'));
