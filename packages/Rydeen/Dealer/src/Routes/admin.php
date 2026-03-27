@@ -28,6 +28,7 @@ Route::middleware(['web', 'admin'])->prefix('admin/rydeen/dealers')->group(funct
     Route::post('{id}/update-forecast', [DealerApprovalController::class, 'updateForecastLevel'])->name('admin.rydeen.dealers.update-forecast');
     Route::post('{id}/resend-invitation', [DealerApprovalController::class, 'resendInvitation'])->name('admin.rydeen.dealers.resend-invitation');
     Route::post('{id}/impersonate', [ImpersonationController::class, 'start'])->name('admin.rydeen.dealers.impersonate');
+    Route::post('{id}/approve-address/{addressId}', [DealerApprovalController::class, 'approveAddress'])->name('admin.rydeen.dealers.approve-address');
 });
 
 Route::middleware(['web', 'admin'])->prefix('admin/rydeen/orders')->group(function () {

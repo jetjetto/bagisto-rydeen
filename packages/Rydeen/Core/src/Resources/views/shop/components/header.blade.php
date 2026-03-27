@@ -20,6 +20,10 @@
                        class="text-sm font-medium {{ request()->is('dealer/orders*') ? 'text-gray-900 border-b-2 border-yellow-400 pb-1' : 'text-gray-600 hover:text-gray-900' }}">
                         Orders
                     </a>
+                    <a href="/dealer/addresses"
+                       class="text-sm font-medium {{ request()->is('dealer/addresses*') ? 'text-gray-900 border-b-2 border-yellow-400 pb-1' : 'text-gray-600 hover:text-gray-900' }}">
+                        Addresses
+                    </a>
                     <a href="/dealer/resources"
                        class="text-sm font-medium {{ request()->is('dealer/resources*') ? 'text-gray-900 border-b-2 border-yellow-400 pb-1' : 'text-gray-600 hover:text-gray-900' }}">
                         Resources
@@ -78,6 +82,10 @@
                 <a href="/dealer/orders"
                    class="block px-3 py-2 rounded text-sm font-medium {{ request()->is('dealer/orders*') ? 'bg-yellow-50 text-gray-900' : 'text-gray-600 hover:bg-gray-100' }}">
                     Orders
+                </a>
+                <a href="/dealer/addresses"
+                   class="block px-3 py-2 rounded text-sm font-medium {{ request()->is('dealer/addresses*') ? 'bg-yellow-50 text-gray-900' : 'text-gray-600 hover:bg-gray-100' }}">
+                    Addresses
                 </a>
                 <a href="/dealer/resources"
                    class="block px-3 py-2 rounded text-sm font-medium {{ request()->is('dealer/resources*') ? 'bg-yellow-50 text-gray-900' : 'text-gray-600 hover:bg-gray-100' }}">

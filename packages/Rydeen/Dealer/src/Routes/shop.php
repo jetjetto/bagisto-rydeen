@@ -6,6 +6,7 @@ use Rydeen\Dealer\Http\Controllers\Admin\ImpersonationController;
 use Rydeen\Dealer\Http\Controllers\Shop\CatalogController;
 use Rydeen\Dealer\Http\Controllers\Shop\DashboardController;
 use Rydeen\Dealer\Http\Controllers\Shop\OrderController;
+use Rydeen\Dealer\Http\Controllers\Shop\AddressController;
 use Rydeen\Dealer\Http\Controllers\Shop\ContactController;
 use Rydeen\Dealer\Http\Controllers\Shop\ResourcesController;
 
@@ -45,6 +46,11 @@ Route::middleware(['web', 'customer', 'device.verify'])->prefix('dealer')->group
     // Contacts (JSON API for order-review widget)
     Route::get('contacts/search', [ContactController::class, 'search'])->name('dealer.contacts.search');
     Route::post('contacts', [ContactController::class, 'store'])->name('dealer.contacts.store');
+
+    // Addresses
+    Route::get('addresses', [AddressController::class, 'index'])->name('dealer.addresses');
+    Route::post('addresses', [AddressController::class, 'store'])->name('dealer.addresses.store');
+    Route::delete('addresses/{id}', [AddressController::class, 'destroy'])->name('dealer.addresses.destroy');
 
     // Impersonation stop
     Route::post('impersonate/stop', [ImpersonationController::class, 'stop'])->name('dealer.impersonate.stop');
