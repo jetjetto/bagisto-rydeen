@@ -52,7 +52,9 @@ module.exports = {
 
             fontFamily: {
                 inter: ['Inter'],
-                icon: ['icomoon']
+                icon: ['icomoon'],
+                lato: ['Lato', 'sans-serif'],
+                montserrat: ['Montserrat', 'sans-serif'],
             }
         },
     },
